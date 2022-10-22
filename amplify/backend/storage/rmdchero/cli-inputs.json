@@ -1,0 +1,14 @@
+{
+  "resourceName": "rmdchero",
+  "policyUUID": "31416d5d",
+  "bucketName": "rmdchero",
+  "storageAccess": "auth",
+  "guestAccess": [],
+  "authAccess": [
+    "CREATE_AND_UPDATE",
+    "READ",
+    "DELETE"
+  ],
+  "triggerFunction": "NONE",
+  "groupAccess": {}
+}

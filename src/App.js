@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
 import "./App.css";
 import "@aws-amplify/ui-react/styles.css";
-import { API } from "aws-amplify";
+import { API, Storage } from "aws-amplify";
 import {
   Button,
   Flex,
   Heading,
+  Image,
   Text,
   TextField,
   View,
@@ -26,17 +27,29 @@ const App = ({ signOut }) => {
 
   async function fetchTodos() {
     const apiData = await API.graphql({ query: listTodos });
-    const todosFromAPI = apiData.data.listTodos.items;
+    const todosFromAPI = apiData.data.todos.items;
+    await Promise.all(
+      todosFromAPI.map(async (todo) => {
+        if (todo.image) {
+          const url = await Storage.get(todo.name);
+          todo.image = url;
+        }
+        return todo;
+      })
+    );
     setTodos(todosFromAPI);
   }
 
   async function createTodo(event) {
     event.preventDefault();
     const form = new FormData(event.target);
+    const image = form.get("image");
     const data = {
       name: form.get("name"),
       description: form.get("description"),
+      image: image.name,
     };
+    if (!!data.image) await Storage.put(data.name, image);
     await API.graphql({
       query: createTodoMutation,
       variables: { input: data },
@@ -45,9 +58,10 @@ const App = ({ signOut }) => {
     event.target.reset();
   }
 
-  async function deleteTodo({ id }) {
+  async function deleteTodo({ id, name }) {
     const newTodos = todos.filter((todo) => todo.id !== id);
     setTodos(newTodos);
+    await Storage.remove(name);
     await API.graphql({
       query: deleteTodoMutation,
       variables: { input: { id } },
@@ -75,6 +89,12 @@ const App = ({ signOut }) => {
             variation="quiet"
             required
           />
+          <View
+            name="image"
+            as="input"
+            type="file"
+            style={{ alignSelf: "end" }}
+          />
           <Button type="submit" variation="primary">
             Create Todo
           </Button>
@@ -93,6 +113,13 @@ const App = ({ signOut }) => {
               {todo.name}
             </Text>
             <Text as="span">{todo.description}</Text>
+            {todo.image && (
+              <Image
+                src={todo.image}
+                alt={`visual aid for ${todo.name}`}
+                style={{ width: 400 }}
+              />
+            )}
             <Button variation="link" onClick={() => deleteTodo(todo)}>
               Delete todo
             </Button>
