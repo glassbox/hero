@@ -27,7 +27,7 @@ const App = ({ signOut }) => {
 
   async function fetchTodos() {
     const apiData = await API.graphql({ query: listTodos });
-    const todosFromAPI = apiData.data.todos.items;
+    const todosFromAPI = apiData.data.listTodos.items;
     await Promise.all(
       todosFromAPI.map(async (todo) => {
         if (todo.image) {
@@ -100,7 +100,7 @@ const App = ({ signOut }) => {
           </Button>
         </Flex>
       </View>
-      <Heading level={2}>Current Todos</Heading>
+      <Heading level={2}>Agent Current Todos</Heading>
       <View margin="3rem 0">
         {todos.map((todo) => (
           <Flex
@@ -117,7 +117,7 @@ const App = ({ signOut }) => {
               <Image
                 src={todo.image}
                 alt={`visual aid for ${todo.name}`}
-                style={{ width: 400 }}
+                style={{ width: 30 }}
               />
             )}
             <Button variation="link" onClick={() => deleteTodo(todo)}>
