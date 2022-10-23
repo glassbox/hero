@@ -6,12 +6,11 @@ import {
   Button,
   Flex,
   Heading,
-  Image,
-  Text,
   TextField,
   View,
   withAuthenticator,
 } from "@aws-amplify/ui-react";
+import { NavBar, WorkItemCollection, WorkItemCard1 } from "./ui-components";
 import { listTodos } from "./graphql/queries";
 import {
   createTodo as createTodoMutation,
@@ -70,63 +69,19 @@ const App = ({ signOut }) => {
 
   return (
     <View className="App">
-      <Heading level={1}>My Todos App</Heading>
-      <View as="form" margin="3rem 0" onSubmit={createTodo}>
-        <Flex direction="row" justifyContent="center">
-          <TextField
-            name="name"
-            placeholder="Todo Name"
-            label="Todo Name"
-            labelHidden
-            variation="quiet"
-            required
-          />
-          <TextField
-            name="description"
-            placeholder="Todo Description"
-            label="Todo Description"
-            labelHidden
-            variation="quiet"
-            required
-          />
-          <View
-            name="image"
-            as="input"
-            type="file"
-            style={{ alignSelf: "end" }}
-          />
-          <Button type="submit" variation="primary">
-            Create Todo
-          </Button>
+      <NavBar />
+
+      <View>
+        <Flex overflow={"auto"}>
+          <View backgroundColor={"grey"} padding={"5px"}>
+            <WorkItemCollection />
+          </View>
+
+          <Flex position={"relative"} overflow={"hidden"} grow={1}>
+            HELLO
+          </Flex>
         </Flex>
       </View>
-      <Heading level={2}>Agent Current Todos</Heading>
-      <View margin="3rem 0">
-        {todos.map((todo) => (
-          <Flex
-            key={todo.id || todo.name}
-            direction="row"
-            justifyContent="center"
-            alignItems="center"
-          >
-            <Text as="strong" fontWeight={700}>
-              {todo.name}
-            </Text>
-            <Text as="span">{todo.description}</Text>
-            {todo.image && (
-              <Image
-                src={todo.image}
-                alt={`visual aid for ${todo.name}`}
-                style={{ width: 30 }}
-              />
-            )}
-            <Button variation="link" onClick={() => deleteTodo(todo)}>
-              Delete todo
-            </Button>
-          </Flex>
-        ))}
-      </View>
-      <Button onClick={signOut}>Sign Out</Button>
     </View>
   );
 };
